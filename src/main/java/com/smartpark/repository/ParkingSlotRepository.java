@@ -1,11 +1,11 @@
 package com.smartpark.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.smartpark.model.Vehicle;
 
 @Repository
 public class ParkingSlotRepository {
@@ -13,26 +13,59 @@ public class ParkingSlotRepository {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	RedisTemplate<String, Object> redisTemplate;
-
-	public void addParkingSlot(int slotNumber) {
+	public String addParkingSlot(int slotNumber) {
 		String sql = "INSERT INTO parking_slot (slot_number, is_occupied) VALUES (?, ?)";
-		jdbcTemplate.update(sql, slotNumber, false);
+
+		try {
+			jdbcTemplate.update(sql, slotNumber, false);
+			return "Parking slot added successfully.";
+		} catch (DataAccessException e) {
+			return "Failed to add parking slot.";
+		}
 	}
 
-	public void removeParkingSlot(int slotId) {
+	public String removeParkingSlot(int slotId) {
 		String sql = "DELETE FROM parking_slot WHERE  slot_number= ?";
-		jdbcTemplate.update(sql, slotId);
+		try {
+			jdbcTemplate.update(sql, slotId);
+			return "Parking slot removed successfully.";
+		} catch (DataAccessException e) {
+			return "Failed to remove parking slot.";
+		}
 	}
 
-	public void parkVehicleOnSlot(int slotId, int vehicleId) {
+	public String parkVehicleOnSlot(int slotId, int vehicleId) {
 		String sql = "UPDATE parking_slot SET is_occupied = true, vehicle_id = ? WHERE slot_number = ?";
-		jdbcTemplate.update(sql, vehicleId, slotId);
+		try {
+			jdbcTemplate.update(sql, vehicleId, slotId);
+			return "Vehicle parked successfully.";
+		} catch (DataAccessException e) {
+			return "Failed to park vehicle.";
+		}
 	}
 
-	public void emptySlot(int slotNum) {
+	public String emptySlot(int slotNum) {
 		String sql = "UPDATE parking_slot SET is_occupied = false, vehicle_id = null WHERE slot_number = ?";
-		jdbcTemplate.update(sql, slotNum);
+		try {
+			jdbcTemplate.update(sql, slotNum);
+			return "Slot emptied successfully.";
+		} catch (DataAccessException e) {
+			return "Failed to empty slot.";
+		}
+	}
+	
+	public String addVehicle(String licensePlate, String color, String model) {
+
+		String sql = "INSERT INTO vehicle (license_plate, color, model) VALUES (?,?,?)";
+
+		try {
+			jdbcTemplate.update(sql, licensePlate, color, model);
+			return "Vehicle added successfully.";
+		} catch (DuplicateKeyException e) {
+			return "Failed to add vehicle: already exists.";
+		} catch (DataAccessException e) {
+			return "Failed to add vehicle";
+		}
+
 	}
 }

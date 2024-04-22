@@ -1,10 +1,17 @@
 package com.smartpark.service;
 
+import com.smartpark.model.Vehicle;
+
 public interface ParkingSlotService {
-  
-	public void addParkingSlot(Integer slotNum);
-	public void removeParkingSlot(Integer slotId);
-	public void parkVehicle(Integer slotNum,Integer vehicleId);
-	public void emptySlot(Integer slotNum);
+
+	public String addParkingSlot(Integer slotNum);
+
+	public String removeParkingSlot(Integer slotId);
+
+	public String parkVehicle(Integer slotNum, Integer vehicleId);
+
+	public String emptySlot(Integer slotNum);
 	
+	 public String addVehicle(Vehicle vehicle);
+
 }

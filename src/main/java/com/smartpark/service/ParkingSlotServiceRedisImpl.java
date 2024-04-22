@@ -4,67 +4,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import com.smartpark.model.ParkingSlot;
 import com.smartpark.model.Vehicle;
 import com.smartpark.repository.ParkingSlotRedisRepository;
-import com.smartpark.repository.VehicleRedisRepo;
 
 @Service
 @ConditionalOnProperty(name = "db_flag", havingValue = "redis")
 public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 
 	@Autowired
-	private ParkingSlotRedisRepository parkingSlotRedisRepositoryl;
-
-	@Autowired
-	private VehicleRedisRepo vehicleRepo;
+	private ParkingSlotRedisRepository parkingSlotRepo;
 
 	@Override
-	public void addParkingSlot(Integer slotNum) {
-
-		ParkingSlot parkingSlot = new ParkingSlot();
-		parkingSlot.setSlotNumber(slotNum);
-
-		parkingSlotRedisRepositoryl.save(parkingSlot);
-
+	public String addParkingSlot(Integer slotNum) {
+		String response = parkingSlotRepo.addParkingSlot(slotNum);
+		return response;
 	}
 
 	@Override
-	public void removeParkingSlot(Integer slotNum) {
-		parkingSlotRedisRepositoryl.findBySlotNumber(slotNum);
-
+	public String removeParkingSlot(Integer slotNum) {
+		String response = parkingSlotRepo.removeParkingSlot(slotNum);
+		return response;
 	}
 
 	@Override
-	public void parkVehicle(Integer slotNum, Integer vehicleId) {
-		ParkingSlot parkingSlot = parkingSlotRedisRepositoryl.findBySlotNumber(slotNum);
-
-		Vehicle vehicle = vehicleRepo.findById(vehicleId);
-
-		if (parkingSlot != null) {
-			parkingSlot.setVehicle(vehicle);
-			parkingSlot.setOccupied(true);
-			parkingSlotRedisRepositoryl.save(parkingSlot);
-		} else {
-
-			throw new RuntimeException("Something went wrong");
-
-		}
-
+	public String parkVehicle(Integer slotNum, Integer vehicleId) {
+		String response = parkingSlotRepo.parkVehicle(slotNum, vehicleId);
+		return response;
 	}
 
 	@Override
-	public void emptySlot(Integer slotNum) {
-		ParkingSlot parkingSlot = parkingSlotRedisRepositoryl.findBySlotNumber(slotNum);
+	public String emptySlot(Integer slotNum) {
+		String response = parkingSlotRepo.emptySlot(slotNum);
+		return response;
+	}
 
-		if (parkingSlot != null) {
-			parkingSlot.setOccupied(false);
-			parkingSlot.setVehicle(null);
-			parkingSlotRedisRepositoryl.save(parkingSlot);
-		} else {
-			throw new RuntimeException("Something went wrong");
-		}
-
+	@Override
+	public String addVehicle(Vehicle vehicle) {
+		String response = parkingSlotRepo.addVehicle(vehicle);
+		return response;
 	}
 
 }

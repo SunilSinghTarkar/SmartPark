@@ -2,14 +2,14 @@ package com.smartpark.model;
 
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash
-public class Vehicle{
+@RedisHash("Vehicle")
+public class Vehicle {
 
 	private int id;
 	private String licensePlate;
 	private String color;
 	private String model;
-  
+
 	public Vehicle() {
 
 	}
