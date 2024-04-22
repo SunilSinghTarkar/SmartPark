@@ -1,5 +1,9 @@
 package com.smartpark.service;
 
-public interface VehicleService {
+import com.smartpark.model.Vehicle;
 
+public interface VehicleService {
+  public void addVehicle(Vehicle vehicle);
+  public void removeVehicle();
+  
 }
