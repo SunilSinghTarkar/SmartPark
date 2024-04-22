@@ -28,21 +28,7 @@ public class ParkingController {
 		return "Hello";
 	}
 
-	// Endpoint for add a parking slot
-	@PostMapping("/addSlot/{slotNum}")
-	public ResponseEntity<String> addParkingSlot(@PathVariable Integer slotNum) {
-		parkingSlotService.addParkingSlot(slotNum);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Parking slot added successfully.");
-	}
-	
-	 // Endpoint for remove a parking slot
-    @DeleteMapping("/removeSlot/{slotId}")
-    public ResponseEntity<String> removeParkingSlot(@PathVariable Integer slotId) {
-        parkingSlotService.removeParkingSlot(slotId);
-        return ResponseEntity.ok("Parking slot removed successfully.");
-    }
-
-    //Endpoint for add a vehicle
+	// Endpoint for add a vehicle
 	@PostMapping("/addVehicle")
 	public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) {
 		try {
@@ -52,6 +38,34 @@ public class ParkingController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while adding vehicle.");
 		}
+	}
+
+	// Endpoint for add a parking slot
+	@PostMapping("/addSlot/{slotNum}")
+	public ResponseEntity<String> addParkingSlot(@PathVariable Integer slotNum) {
+		parkingSlotService.addParkingSlot(slotNum);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Parking slot added successfully.");
+	}
+
+	// Endpoint for remove a parking slot
+	@DeleteMapping("/removeSlot/{slotNum}")
+	public ResponseEntity<String> removeParkingSlot(@PathVariable Integer slotNum) {
+		parkingSlotService.removeParkingSlot(slotNum);
+		return ResponseEntity.ok("Parking slot removed successfully.");
+	}
+
+	// Endpoint to put a vehicle on a slot
+	@PostMapping("/parkVehicle/{slotNum}/{vehicleId}")
+	public ResponseEntity<String> putVehicleOnSlot(@PathVariable Integer slotNum, @PathVariable Integer vehicleId) {
+		parkingSlotService.parkVehicle(slotNum, vehicleId);
+		return ResponseEntity.ok("Vehicle parked on slot successfully.");
+	}
+
+	// Endpoint to empty a slot
+	@PostMapping("/emptySlot/{slotNum}")
+	public ResponseEntity<String> emptySlot(@PathVariable Integer slotNum) {
+		parkingSlotService.emptySlot(slotNum);
+		return ResponseEntity.ok("Slot emptied successfully.");
 	}
 
 }

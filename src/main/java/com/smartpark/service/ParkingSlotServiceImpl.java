@@ -11,7 +11,6 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
 	@Autowired
 	private ParkingSlotRepository parkingSlotRepository;
 
-
 	@Override
 	public void addParkingSlot(Integer slotNum) {
 		parkingSlotRepository.addParkingSlot(slotNum);
@@ -24,14 +23,15 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
 	}
 
 	@Override
-	public void parkVehicle() {
-		// TODO Auto-generated method stub
+	public void parkVehicle(Integer slotNum, Integer vehicleId) {
+
+		parkingSlotRepository.parkVehicleOnSlot(slotNum, vehicleId);
 
 	}
 
 	@Override
-	public void emptySlot() {
-		// TODO Auto-generated method stub
+	public void emptySlot(Integer slotNum) {
+		parkingSlotRepository.emptySlot(slotNum);
 
 	}
 

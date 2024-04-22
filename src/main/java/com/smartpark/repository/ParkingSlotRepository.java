@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.smartpark.model.Vehicle;
+
 @Repository
 public class ParkingSlotRepository {
 
@@ -20,4 +22,13 @@ public class ParkingSlotRepository {
 		jdbcTemplate.update(sql, slotId);
 	}
 
+	public void parkVehicleOnSlot(int slotId, int vehicleId) {
+		String sql = "UPDATE parking_slot SET is_occupied = true, vehicle_id = ? WHERE slot_number = ?";
+		jdbcTemplate.update(sql, vehicleId, slotId);
+	}
+
+	public void emptySlot(int slotNum) {
+		String sql = "UPDATE parking_slot SET is_occupied = false, vehicle_id = null WHERE slot_number = ?";
+		jdbcTemplate.update(sql, slotNum);
+	}
 }

@@ -18,10 +18,5 @@ public class VehicleServiceImpl implements VehicleService {
 
 	}
 
-	@Override
-	public void removeVehicle() {
-		
-
-	}
 
 }
