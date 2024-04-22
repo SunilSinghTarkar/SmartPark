@@ -1,6 +1,7 @@
 package com.smartpark.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,9 @@ public class ParkingSlotRepository {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	RedisTemplate<String, Object> redisTemplate;
 
 	public void addParkingSlot(int slotNumber) {
 		String sql = "INSERT INTO parking_slot (slot_number, is_occupied) VALUES (?, ?)";

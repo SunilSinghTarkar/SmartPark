@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.smartpark.model.Vehicle;
 import com.smartpark.service.ParkingSlotService;
 import com.smartpark.service.VehicleService;
@@ -30,7 +31,7 @@ public class ParkingController {
 
 	// Endpoint for add a vehicle
 	@PostMapping("/addVehicle")
-	public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) {
+	public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) throws JsonProcessingException {
 		try {
 			vehicleService.addVehicle(vehicle);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Vehicle added successfully.");

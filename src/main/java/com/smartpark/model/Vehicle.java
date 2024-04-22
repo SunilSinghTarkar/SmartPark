@@ -1,12 +1,15 @@
 package com.smartpark.model;
 
-public class Vehicle {
+import org.springframework.data.redis.core.RedisHash;
+
+@RedisHash
+public class Vehicle{
 
 	private int id;
 	private String licensePlate;
 	private String color;
 	private String model;
-
+  
 	public Vehicle() {
 
 	}

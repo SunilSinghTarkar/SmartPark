@@ -1,7 +1,8 @@
 package com.smartpark.model;
 
+import org.springframework.data.redis.core.RedisHash;
 
-
+@RedisHash
 public class ParkingSlot {
 
 	    private int id;
