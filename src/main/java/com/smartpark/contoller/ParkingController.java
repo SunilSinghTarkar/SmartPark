@@ -5,6 +5,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,13 @@ public class ParkingController {
 
 	@Autowired
 	private ParkingSlotService parkingSlotService;
+
+	// Endpoint to get Number of Total Parked Vehicles
+	@GetMapping
+	public ResponseEntity<Long> getTotalParkedVehicles() {
+		long response = parkingSlotService.getTotalParkedVehicles();
+		return ResponseEntity.ok(response);
+	}
 
 	// Endpoint for add a vehicle
 	@PostMapping("/vehicle")

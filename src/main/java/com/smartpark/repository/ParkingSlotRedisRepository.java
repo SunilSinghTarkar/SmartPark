@@ -1,8 +1,12 @@
 package com.smartpark.repository;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.smartpark.config.AppConstants;
+import com.smartpark.model.ParkingSlot;
 import com.smartpark.model.Vehicle;
 
 import redis.clients.jedis.Jedis;
@@ -12,6 +16,7 @@ public class ParkingSlotRedisRepository {
 
 	@Autowired
 	private Jedis jedis;
+
 
 	public String addParkingSlot(int slotNumber) {
 		String key = "parking_slot:" + slotNumber;
@@ -55,19 +60,28 @@ public class ParkingSlotRedisRepository {
 		}
 	}
 
-	
 	public String emptySlot(Integer slotNum) {
-	    String slotKey = "parking_slot:" + slotNum;
-	    if (jedis.exists(slotKey)) {
-	        jedis.hset(slotKey, "vehicleId", "");
-	        jedis.hset(slotKey, "isOccupied", "false");
-	        return "Slot " + slotNum + " emptied successfully.";
-	    } else {
-	        return "Parking slot does not exist.";
-	    }
+		String slotKey = "parking_slot:" + slotNum;
+		if (jedis.exists(slotKey)) {
+			jedis.hset(slotKey, "vehicleId", "");
+			jedis.hset(slotKey, "isOccupied", "false");
+			return "Slot " + slotNum + " emptied successfully.";
+		} else {
+			return "Parking slot does not exist.";
+		}
+	}
+
+	public long getTotalParkedVehicles() {
+
+		Set<String> parkingSlotKeys = jedis.keys("parking_slot:*");
+
+		long totalParked = parkingSlotKeys.stream().map(jedis::hgetAll)
+				.filter(slot -> Boolean.parseBoolean(slot.get("isOccupied"))).count();
+		return totalParked;
 	}
 
 	public String addVehicle(Vehicle vehicle) {
+
 		String key = "vehicle:" + vehicle.getId();
 		jedis.hset(key, "id", String.valueOf(vehicle.getId()));
 		jedis.hset(key, "licensePlate", vehicle.getLicensePlate());

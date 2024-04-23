@@ -13,5 +13,7 @@ public interface ParkingSlotService {
 	public String emptySlot(Integer slotNum);
 	
 	 public String addVehicle(Vehicle vehicle);
+	 
+	 public long getTotalParkedVehicles();
 
 }

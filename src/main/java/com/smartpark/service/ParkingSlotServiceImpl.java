@@ -47,4 +47,10 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
 		return response;
 	}
 
+	@Override
+	public long getTotalParkedVehicles() {
+		
+		return 0;
+	}
+
 }
