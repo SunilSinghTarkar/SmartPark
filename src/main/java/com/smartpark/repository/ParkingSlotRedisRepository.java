@@ -90,4 +90,13 @@ public class ParkingSlotRedisRepository {
 
 		return "Vehicle added successfully Redis";
 	}
+	
+	
+	public long increaseParkedCount() {
+		return jedis.hincrBy("Vehicle_Activity", "parkedCount", 1);
+	}
+	public long increaseUnParkedCount() {
+		return jedis.hincrBy("Vehicle_Activity", "unParkedCount", 1);
+
+	}
 }
