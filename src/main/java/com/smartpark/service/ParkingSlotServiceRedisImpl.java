@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.smartpark.config.KafkaTopicConsumer;
-import com.smartpark.config.KafkaTopicSaver;
+import com.smartpark.config.KafkaTopicProducer;
 //import com.smartpark.config.AppConstants;
 //import com.smartpark.model.ParkingSlot;
 import com.smartpark.model.Vehicle;
@@ -19,7 +19,7 @@ public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 	private ParkingSlotRedisRepository parkingSlotRepo;
 
 	@Autowired
-	private KafkaTopicSaver topicSaver;
+	private KafkaTopicProducer topicSaver;
 
 	@Autowired
 	private KafkaTopicConsumer topicConsumer;
@@ -40,7 +40,7 @@ public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 	public String parkVehicle(Integer slotNum, Integer vehicleId) {
 		String response = parkingSlotRepo.parkVehicle(slotNum, vehicleId);
 		topicSaver.saveMessageToKafka("parked");
-		topicConsumer.consumeMessages();
+//		topicConsumer.consumeMessages();
 		return response;
 	}
 
@@ -54,8 +54,6 @@ public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 	@Override
 	public String addVehicle(Vehicle vehicle) {
 		String response = parkingSlotRepo.addVehicle(vehicle);
-		topicSaver.saveVehicleToKafkaTopic(vehicle);
-		topicConsumer.consumeMessagesAndSaveToRedis();
 		return response;
 	}
 

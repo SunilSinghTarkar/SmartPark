@@ -18,18 +18,17 @@ import com.smartpark.model.Vehicle;
 import jakarta.annotation.PreDestroy;
 
 @Component
-public class KafkaTopicSaver {
+public class KafkaTopicProducer {
 
 	private Producer<String, String> producer;
-	private ObjectMapper objectMapper;
 
-	public KafkaTopicSaver() {
+	public KafkaTopicProducer() {
 		Properties props = new Properties();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, AppConstants.BOOTSTRAP_SERVERS);
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		this.producer = new KafkaProducer<>(props);
-		this.objectMapper = new ObjectMapper();
+		
 	}
 
 	public void saveToKafkaTopic(String message) {
@@ -60,25 +59,6 @@ public class KafkaTopicSaver {
 				}
 			}
 		});
-	}
-
-	public void saveVehicleToKafkaTopic(Vehicle vehicle) {
-		try {
-			String jsonData = objectMapper.writeValueAsString(vehicle);
-			ProducerRecord<String, String> record = new ProducerRecord<>(AppConstants.VEHICLE_TOPIC_NAME, jsonData);
-			producer.send(record, new Callback() {
-				@Override
-				public void onCompletion(RecordMetadata metadata, Exception exception) {
-					if (exception != null) {
-						System.err.println("Error saving message to Kafka topic: " + exception.getMessage());
-					} else {
-						System.out.println("Message saved successfully to Kafka topic.");
-					}
-				}
-			});
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
 	}
     @PreDestroy
 	public void close() {
