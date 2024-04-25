@@ -1,7 +1,6 @@
-package com.smartpark.config;
-
+package com.smartpark.kafka;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.Consumer;
@@ -10,61 +9,73 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.smartpark.config.AppConstants;
 import com.smartpark.repository.ParkingSlotRedisRepository;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import redis.clients.jedis.Jedis;
 
 @Component
 public class KafkaTopicConsumer {
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final Jedis jedis;
-	private final ParkingSlotRedisRepository redisRepo;
+	private static final Logger logger = LoggerFactory.getLogger(KafkaTopicConsumer.class);
+
 	private final Consumer<String, String> consumer;
 
 	@Autowired
-	public KafkaTopicConsumer(Jedis jedis, ParkingSlotRedisRepository redisRepo) {
-		this.jedis = jedis;
-		this.redisRepo = redisRepo;
-		this.consumer = createConsumer();
-		consumer.subscribe(Collections.singletonList(AppConstants.PARK_TOPIC_NAME));
+	private Jedis jedis;
 
+	@Autowired
+	private ParkingSlotRedisRepository redisRepo;
+
+	@PostConstruct
+	public void startConsumer() {
+		Thread consumerThread = new Thread(this::consumeMessages);
+		consumerThread.start();
 	}
 
-	private Consumer<String, String> createConsumer() {
+	public KafkaTopicConsumer() {
 		Properties props = new Properties();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, AppConstants.BOOTSTRAP_SERVERS);
-		props.put(ConsumerConfig.GROUP_ID_CONFIG, "my-consumer-group");
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, AppConstants.PARK_TOPIC_NAME);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-
-		return new KafkaConsumer<>(props);
+		consumer = new KafkaConsumer<>(props);
+		consumer.subscribe(Arrays.asList(AppConstants.PARK_TOPIC_NAME));
 	}
 
 	public void consumeMessages() {
+		
 		try {
 			while (true) {
 				ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+				
 				for (ConsumerRecord<String, String> record : records) {
-					prodcessParkingSlotEvent(record.value());
+					
+					String message = record.value();
+					logger.info("Received message: {}", message);
+					processParkingEvent(message);
 				}
-				consumer.commitAsync();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while consuming messages", e);
+		} finally {
+			closeConsumer();
 		}
 	}
 
-	private void prodcessParkingSlotEvent(String value) {
-		if ("parked".equals(value)) {
+	private void processParkingEvent(String message) {
+		logger.info("inside processParkingEvent");
+	
+		if ("parked".equals(message)) {
 			redisRepo.increaseParkedCount();
-		} else {
+		} else if ("taken_out".equals(message)) {
 			redisRepo.increaseUnParkedCount();
 		}
 	}
@@ -73,5 +84,4 @@ public class KafkaTopicConsumer {
 	public void closeConsumer() {
 		consumer.close();
 	}
-
 }

@@ -1,4 +1,4 @@
-package com.smartpark.config;
+package com.smartpark.kafka;
 
 import java.util.Properties;
 
@@ -11,9 +11,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartpark.model.Vehicle;
+import com.smartpark.config.AppConstants;
 
 import jakarta.annotation.PreDestroy;
 
@@ -31,20 +29,6 @@ public class KafkaTopicProducer {
 		
 	}
 
-	public void saveToKafkaTopic(String message) {
-		ProducerRecord<String, String> record = new ProducerRecord<>(AppConstants.PARK_TOPIC_NAME, message);
-		producer.send(record, new Callback() {
-			@Override
-			public void onCompletion(RecordMetadata metadata, Exception exception) {
-				if (exception != null) {
-					
-					System.err.println("Error saving message to Kafka topic: " + exception.getMessage());
-				} else {
-					System.out.println("Message saved successfully to Kafka topic.");
-				}
-			}
-		});
-	}
 
 	public void saveMessageToKafka(String message) {
 		ProducerRecord<String, String> record = new ProducerRecord<>(AppConstants.PARK_TOPIC_NAME, message);

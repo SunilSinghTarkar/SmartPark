@@ -24,12 +24,7 @@ public class ParkingController {
 	@Autowired
 	private ParkingSlotService parkingSlotService;
 
-	// Endpoint to get Number of Total Parked Vehicles
-	@GetMapping
-	public ResponseEntity<Long> getTotalParkedVehicles() {
-		long response = parkingSlotService.getTotalParkedVehicles();
-		return ResponseEntity.ok(response);
-	}
+	
 
 	// Endpoint for add a parking slot
 	@PostMapping("/{slotNum}")
@@ -37,14 +32,7 @@ public class ParkingController {
 		String response = parkingSlotService.addParkingSlot(slotNum);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
-	// Endpoint for add a vehicle
-		@PostMapping("/vehicle")
-		public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) {
-
-			String response = parkingSlotService.addVehicle(vehicle);
-			return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-		}
+	
 	// Endpoint for remove a parking slot
 	@DeleteMapping("/{slotNum}")
 	public ResponseEntity<String> removeParkingSlot(@PathVariable Integer slotNum) {
