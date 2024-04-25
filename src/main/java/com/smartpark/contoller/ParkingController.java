@@ -31,22 +31,20 @@ public class ParkingController {
 		return ResponseEntity.ok(response);
 	}
 
-	// Endpoint for add a vehicle
-	@PostMapping("/vehicle")
-	public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) {
-
-		String response = parkingSlotService.addVehicle(vehicle);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-	}
-
 	// Endpoint for add a parking slot
 	@PostMapping("/{slotNum}")
 	public ResponseEntity<String> addParkingSlot(@PathVariable Integer slotNum) {
 		String response = parkingSlotService.addParkingSlot(slotNum);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+	// Endpoint for add a vehicle
+		@PostMapping("/vehicle")
+		public ResponseEntity<String> addVehicle(@RequestBody Vehicle vehicle) {
 
+			String response = parkingSlotService.addVehicle(vehicle);
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+		}
 	// Endpoint for remove a parking slot
 	@DeleteMapping("/{slotNum}")
 	public ResponseEntity<String> removeParkingSlot(@PathVariable Integer slotNum) {
