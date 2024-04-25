@@ -3,11 +3,7 @@ package com.smartpark.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-
-import com.smartpark.config.KafkaTopicConsumer;
-import com.smartpark.config.KafkaTopicProducer;
-//import com.smartpark.config.AppConstants;
-//import com.smartpark.model.ParkingSlot;
+import com.smartpark.kafka.KafkaTopicProducer;
 import com.smartpark.model.Vehicle;
 import com.smartpark.repository.ParkingSlotRedisRepository;
 
@@ -19,10 +15,7 @@ public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 	private ParkingSlotRedisRepository parkingSlotRepo;
 
 	@Autowired
-	private KafkaTopicProducer topicSaver;
-
-	@Autowired
-	private KafkaTopicConsumer topicConsumer;
+	private KafkaTopicProducer kafkaTopicProducer;
 
 	@Override
 	public String addParkingSlot(Integer slotNum) {
@@ -39,15 +32,15 @@ public class ParkingSlotServiceRedisImpl implements ParkingSlotService {
 	@Override
 	public String parkVehicle(Integer slotNum, Integer vehicleId) {
 		String response = parkingSlotRepo.parkVehicle(slotNum, vehicleId);
-		topicSaver.saveMessageToKafka("parked");
-//		topicConsumer.consumeMessages();
+		kafkaTopicProducer.saveMessageToKafka("parked");
 		return response;
 	}
 
 	@Override
 	public String emptySlot(Integer slotNum) {
 		String response = parkingSlotRepo.emptySlot(slotNum);
-		topicSaver.saveMessageToKafka("taken_out");
+		kafkaTopicProducer.saveMessageToKafka("taken_out");
+		
 		return response;
 	}
 
